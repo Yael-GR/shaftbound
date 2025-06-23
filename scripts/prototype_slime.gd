@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
-@onready var health_component: HealthComponent = $HealthComponent
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@export var health_component: HealthComponent
+@export var animation_player: AnimationPlayer
 
 func _ready() -> void:
 	health_component.target_is_dead.connect(play_death_animation)

@@ -8,5 +8,4 @@ func _ready() -> void:
 
 func _on_area_entered(hitbox: Hitbox) -> void:
 	if hitbox != null:
-		print("i need to recieve damage")
 		recieved_damage.emit(hitbox.damage)

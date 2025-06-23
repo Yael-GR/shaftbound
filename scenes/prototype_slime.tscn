@@ -74,8 +74,12 @@ size = Vector2(12, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_htmcr"]
 size = Vector2(12, 12)
 
-[node name="PrototypeSlime" type="CharacterBody2D"]
+[node name="PrototypeSlime" type="CharacterBody2D" node_paths=PackedStringArray("health_component", "animation_player")]
+collision_layer = 8
+collision_mask = 7
 script = ExtResource("1_rb7gn")
+health_component = NodePath("Health/HealthComponent")
+animation_player = NodePath("AnimationPlayer")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
@@ -93,7 +97,7 @@ libraries = {
 }
 
 [node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 4
+collision_layer = 8
 collision_mask = 0
 script = ExtResource("5_tebm1")
 damage = 5.0
@@ -106,7 +110,7 @@ debug_color = Color(0, 0.64599, 0.247664, 0.42)
 
 [node name="Hurtbox" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 2
+collision_mask = 4
 script = ExtResource("5_htmcr")
 metadata/_custom_type_script = "uid://b8r1ydgvmqa1m"
 
@@ -115,16 +119,16 @@ position = Vector2(0, -6)
 shape = SubResource("RectangleShape2D_htmcr")
 debug_color = Color(0.974621, 0.155203, 0.083399, 0.42)
 
-[node name="HealthComponent" type="Node" parent="." node_paths=PackedStringArray("hurtbox")]
-script = ExtResource("2_4ra3w")
-max_health = 20.0
-hurtbox = NodePath("../Hurtbox")
-metadata/_custom_type_script = "uid://cffhv1vjt0j1i"
-
-[node name="HealthbarPosition" type="Node2D" parent="."]
+[node name="Health" type="Node2D" parent="."]
 position = Vector2(0, -15)
 
-[node name="Healthbar" parent="HealthbarPosition" node_paths=PackedStringArray("health_component") instance=ExtResource("2_lcphv")]
+[node name="HealthComponent" type="Node" parent="Health" node_paths=PackedStringArray("hurtbox")]
+script = ExtResource("2_4ra3w")
+max_health = 20.0
+hurtbox = NodePath("../../Hurtbox")
+metadata/_custom_type_script = "uid://cffhv1vjt0j1i"
+
+[node name="Healthbar" parent="Health" node_paths=PackedStringArray("health_component") instance=ExtResource("2_lcphv")]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -136,4 +140,4 @@ offset_right = 10.0
 offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 2
-health_component = NodePath("../../HealthComponent")
+health_component = NodePath("../HealthComponent")
