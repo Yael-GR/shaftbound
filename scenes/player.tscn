@@ -1,0 +1,115 @@
+[gd_scene load_steps=15 format=3 uid="uid://c6u1yywiofnt8"]
+
+[ext_resource type="Script" uid="uid://dl0xyaa7nitcd" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Texture2D" uid="uid://cgak4petsm50v" path="res://assets/sprites/prototypes/Hana Caraka - Base Character/idle.png" id="3_dqkch"]
+[ext_resource type="Script" uid="uid://cu1e8w6c0frgq" path="res://components/scripts/hitbox_component.gd" id="3_qhqgy"]
+[ext_resource type="Script" uid="uid://b8r1ydgvmqa1m" path="res://components/scripts/hurtbox_component.gd" id="4_dqkch"]
+[ext_resource type="Script" uid="uid://cffhv1vjt0j1i" path="res://components/scripts/health_component.gd" id="5_tuyoq"]
+[ext_resource type="PackedScene" uid="uid://bbhu5jj6r7mid" path="res://components/scenes/healthbar.tscn" id="6_fjrip"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
+atlas = ExtResource("3_dqkch")
+region = Rect2(0, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
+atlas = ExtResource("3_dqkch")
+region = Rect2(80, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
+atlas = ExtResource("3_dqkch")
+region = Rect2(160, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tuyoq"]
+atlas = ExtResource("3_dqkch")
+region = Rect2(240, 80, 80, 80)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fjrip"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qhqgy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dqkch")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qlg0r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tuyoq")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fjrip"]
+size = Vector2(7, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qhqgy"]
+size = Vector2(13, 9)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qlg0r"]
+size = Vector2(13, 9)
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("health_component")]
+script = ExtResource("1_g2els")
+health_component = NodePath("HealthComponent")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -7)
+sprite_frames = SubResource("SpriteFrames_fjrip")
+autoplay = "default"
+frame = 1
+frame_progress = 0.688311
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, -2)
+shape = SubResource("RectangleShape2D_fjrip")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("3_qhqgy")
+damage = 5.0
+metadata/_custom_type_script = "uid://cu1e8w6c0frgq"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(-0.5, -4.5)
+shape = SubResource("RectangleShape2D_qhqgy")
+debug_color = Color(0, 0.632923, 0.446178, 0.42)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("4_dqkch")
+metadata/_custom_type_script = "uid://b8r1ydgvmqa1m"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -4)
+shape = SubResource("RectangleShape2D_qlg0r")
+debug_color = Color(0.996227, 0, 0.190787, 0.42)
+
+[node name="HealthComponent" type="Node" parent="." node_paths=PackedStringArray("hurtbox")]
+script = ExtResource("5_tuyoq")
+hurtbox = NodePath("../Hurtbox")
+metadata/_custom_type_script = "uid://cffhv1vjt0j1i"
+
+[node name="HealthbarPosition" type="Node2D" parent="."]
+position = Vector2(0, -17)
+
+[node name="Healthbar" parent="HealthbarPosition" node_paths=PackedStringArray("health_component") instance=ExtResource("6_fjrip")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -2.0
+offset_right = 10.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+health_component = NodePath("../../HealthComponent")
+
+[connection signal="target_is_dead" from="HealthComponent" to="." method="_on_health_component_target_is_dead"]
