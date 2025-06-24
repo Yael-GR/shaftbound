@@ -1,0 +1,143 @@
+[gd_scene load_steps=17 format=3 uid="uid://dpac2l83dcif"]
+
+[ext_resource type="Texture2D" uid="uid://bvo52d8njof1p" path="res://entities/enemies/ochre-jelly/states/ochre-jelly-idle.png" id="1_md0e3"]
+[ext_resource type="Script" uid="uid://dsrfklb1lppwl" path="res://entities/enemies/ochre-jelly/ochre-jelly.gd" id="1_rb7gn"]
+[ext_resource type="Script" uid="uid://cffhv1vjt0j1i" path="res://reuseables/health-component/health_component.gd" id="2_4ra3w"]
+[ext_resource type="PackedScene" uid="uid://bbhu5jj6r7mid" path="res://UI/HUD/healthbar/healthbar.tscn" id="2_lcphv"]
+[ext_resource type="Script" uid="uid://b8r1ydgvmqa1m" path="res://reuseables/hurtbox-component/hurtbox_component.gd" id="5_htmcr"]
+[ext_resource type="Script" uid="uid://cu1e8w6c0frgq" path="res://reuseables/hitbox-component/hitbox_component.gd" id="5_tebm1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5uy6h"]
+atlas = ExtResource("1_md0e3")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c4w8v"]
+atlas = ExtResource("1_md0e3")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xwavj"]
+atlas = ExtResource("1_md0e3")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nenq2"]
+atlas = ExtResource("1_md0e3")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_md484"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5uy6h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c4w8v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xwavj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nenq2")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tebm1"]
+size = Vector2(8, 6)
+
+[sub_resource type="Animation" id="Animation_rb7gn"]
+resource_name = "dead"
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_htmcr"]
+_data = {
+&"dead": SubResource("Animation_rb7gn")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_02f1v"]
+size = Vector2(12, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_htmcr"]
+size = Vector2(12, 12)
+
+[node name="OchreJelly" type="CharacterBody2D" node_paths=PackedStringArray("health_component", "animation_player")]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_rb7gn")
+health_component = NodePath("Health/HealthComponent")
+animation_player = NodePath("AnimationPlayer")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -8)
+sprite_frames = SubResource("SpriteFrames_md484")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_tebm1")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_htmcr")
+}
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("5_tebm1")
+damage = 5.0
+metadata/_custom_type_script = "uid://cu1e8w6c0frgq"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(0, -6)
+shape = SubResource("RectangleShape2D_02f1v")
+debug_color = Color(0, 0.64599, 0.247664, 0.42)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("5_htmcr")
+metadata/_custom_type_script = "uid://b8r1ydgvmqa1m"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -6)
+shape = SubResource("RectangleShape2D_htmcr")
+debug_color = Color(0.974621, 0.155203, 0.083399, 0.42)
+
+[node name="Health" type="Node2D" parent="."]
+position = Vector2(0, -15)
+
+[node name="HealthComponent" type="Node" parent="Health" node_paths=PackedStringArray("hurtbox")]
+script = ExtResource("2_4ra3w")
+max_health = 20.0
+hurtbox = NodePath("../../Hurtbox")
+metadata/_custom_type_script = "uid://cffhv1vjt0j1i"
+
+[node name="Healthbar" parent="Health" node_paths=PackedStringArray("health_component") instance=ExtResource("2_lcphv")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -2.0
+offset_right = 10.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+health_component = NodePath("../HealthComponent")
